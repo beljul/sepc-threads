@@ -22,6 +22,7 @@ void init_queue (struct tsp_queue *q) {
     q->first = 0;
     q->last = 0;
     q->end = 0;
+    q->size = 0;
 }
 
 int empty_queue (struct tsp_queue *q) {
@@ -47,6 +48,7 @@ void add_job (struct tsp_queue *q, tsp_path_t p, int hops, int len) {
        q->last->next = ptr;
        q->last = ptr;
    }
+   (q->size)++;
 }
 
 int get_job (struct tsp_queue *q, tsp_path_t p, int *hops, int *len) {

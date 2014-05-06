@@ -8,6 +8,7 @@
 #include <complex.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #include "tsp-types.h"
 #include "tsp-job.h"
@@ -19,7 +20,6 @@
 /* macro de mesure de temps, retourne une valeur en nanosecondes */
 #define TIME_DIFF(t1, t2) \
   ((t2.tv_sec - t1.tv_sec) * 1000000000ll + (long long int) (t2.tv_nsec - t1.tv_nsec))
-
 
 /* tableau des distances */
 tsp_distance_matrix_t distance ={};
@@ -117,10 +117,24 @@ int main (int argc, char **argv)
     tsp_path_t solution;
     memset (solution, -1, MAX_TOWNS * sizeof (int));
     solution[0] = 0;
+ 
+    tinfo = calloc(nb_threads, sizeof(struct thread_info));
+   
+    int tnum = 0;
+    void *status;
+
     while (!empty_queue (&q)) {
         int hops = 0, len = 0;
         get_job (&q, solution, &hops, &len);
-        tsp (hops, len, solution, &cuts, sol, &sol_len);
+        
+        ++tnum;
+        
+        if(tnum > nb_threads)
+          pthread_join(tinfo[tnum%nb_threads], &status);
+
+        tinfo[tnum%nb_threads].thread_num = tnum%nb_threads;
+        tinfo[tnum%nb_threads].attr = NULL;
+        pthread_create(&tsp_pid, NULL, tsp, (void *)(hops, len, solution, &cuts, sol, &sol_len));
     }
     
     clock_gettime (CLOCK_REALTIME, &t2);

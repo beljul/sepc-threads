@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/jens/Documents/Ensimag/2A/SEPC/sepc-threads/src/tsp-job.c
+stdlib.h
+-
+stdio.h
+-
+string.h
+-
+tsp-types.h
+/home/jens/Documents/Ensimag/2A/SEPC/sepc-threads/src/tsp-types.h
+tsp-job.h
+/home/jens/Documents/Ensimag/2A/SEPC/sepc-threads/src/tsp-job.h
+
+/home/jens/Documents/Ensimag/2A/SEPC/sepc-threads/src/tsp-job.h
+
+/home/jens/Documents/Ensimag/2A/SEPC/sepc-threads/src/tsp-types.h
+
