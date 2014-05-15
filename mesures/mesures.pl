@@ -8,7 +8,8 @@ use Sys::Hostname;
 my $fname= "mesures.csv";
 my $tsp="../build/ensitsp";
 
-my @allnthreads= (1, 2, 4, 8, 16, 32, 64);
+#my @allnthreads= (1, 2, 4, 8, 16, 32, 64);
+my @allnthreads= (1);
 my @allncities= (15..18);
 my @allseeds= (12387, 12388);
 
@@ -36,7 +37,7 @@ for my $nthreads ( @allnthreads ) {
 				  $val[3],$val[6],$val[12],
 				  $val[9],$val[15], $val[18])."\n"; 
 	    }
-	    close($expe)
+	    #close($expe)
 	}
     }
 }

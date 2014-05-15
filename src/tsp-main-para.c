@@ -21,6 +21,8 @@
 #define TIME_DIFF(t1, t2) \
   ((t2.tv_sec - t1.tv_sec) * 1000000000ll + (long long int) (t2.tv_nsec - t1.tv_nsec))
 
+#define min(a,b) (a<=b?a:b)
+
 /* tableau des distances */
 tsp_distance_matrix_t distance ={};
 
@@ -35,7 +37,6 @@ int nb_threads=1;
 
 /* affichage SVG */
 bool affiche_sol= false;
-
 
 static void generate_tsp_jobs (struct tsp_queue *q, int hops, int len, tsp_path_t path, long long int *cuts, tsp_path_t sol, int *sol_len, int depth)
 {
@@ -78,13 +79,14 @@ int main (int argc, char **argv)
     int opt;
     while ((opt = getopt(argc, argv, "s")) != -1) {
       switch (opt) {
-      case 's':
-	affiche_sol = true;
-	break;
-      default:
-	usage(argv[0]);
-	break;
-      }
+        case 's':
+          affiche_sol = true;
+          break;
+
+        default:
+          usage(argv[0]);
+          break;
+        }
     }
 
     if (optind != argc-3)
@@ -117,24 +119,28 @@ int main (int argc, char **argv)
     tsp_path_t solution;
     memset (solution, -1, MAX_TOWNS * sizeof (int));
     solution[0] = 0;
- 
-    tinfo = calloc(nb_threads, sizeof(struct thread_info));
-   
-    int tnum = 0;
-    void *status;
 
+    pthread_t threads[nb_threads];   
+    int jobNum = 0;
+    void *status;
     while (!empty_queue (&q)) {
+        ++jobNum;
         int hops = 0, len = 0;
         get_job (&q, solution, &hops, &len);
-        
-        ++tnum;
-        
-        if(tnum > nb_threads)
-          pthread_join(tinfo[tnum%nb_threads], &status);
 
-        tinfo[tnum%nb_threads].thread_num = tnum%nb_threads;
-        tinfo[tnum%nb_threads].attr = NULL;
-        pthread_create(&tsp_pid, NULL, tsp, (void *)(hops, len, solution, &cuts, sol, &sol_len));
+        if(jobNum > nb_threads)
+          pthread_join(threads[jobNum%nb_threads], &status);
+        
+        struct arg_struct *args = malloc(sizeof(struct arg_struct));
+        args->hops = hops;
+        args->len = len;
+        memcpy(args->path, solution, sizeof(tsp_path_t));
+        args->cuts = &cuts;
+        memcpy(args->sol, sol, sizeof(tsp_path_t));
+        args->sol_len = &sol_len;
+
+        pthread_create(&threads[jobNum%nb_threads], NULL, &tsp, (void *)args);
+
     }
     
     clock_gettime (CLOCK_REALTIME, &t2);

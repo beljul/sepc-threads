@@ -28,17 +28,20 @@ void *tsp (void *args)
     struct arg_struct *data = args;
     int hops = data->hops;
     int len = data->len;
+    
     tsp_path_t path;
     memcpy(path, data->path, sizeof(tsp_path_t));
-    //tsp_path_t path = data->path;
+    
     long long int *cuts = data->cuts;
+    
     tsp_path_t sol;
     memcpy(sol, data->sol, sizeof(tsp_path_t));
+    
     int *sol_len = data->sol_len; 
 
     if (len + cutprefix[(nb_towns-hops)] >= minimum) {
       (*cuts)++ ;
-      return;
+      return NULL;
     }
     
     if (hops == nb_towns) {
@@ -56,9 +59,20 @@ void *tsp (void *args)
             if (!present (i, hops, path)) {
                 path[hops] = i;
                 int dist = distance[me][i];
-                tsp (hops + 1, len + dist, path, cuts, sol, sol_len);
+
+                struct arg_struct *newArgs = malloc(sizeof(struct arg_struct));
+                newArgs->hops = hops + 1;
+                newArgs->len = len + dist;
+                memcpy(newArgs->path, path, sizeof(tsp_path_t));
+                newArgs->cuts = cuts;
+                memcpy(newArgs->sol, sol, sizeof(tsp_path_t));
+                newArgs->sol_len = sol_len;
+
+                //tsp (hops + 1, len + dist, path, cuts, sol, sol_len);
+                tsp ((void *)newArgs);
             }
         }
     }
+    return NULL;
 }
 
