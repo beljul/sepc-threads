@@ -23,7 +23,7 @@ int present (int city, int hops, tsp_path_t path)
 
 
 
-void tsp (void *args)
+void *tsp (void *args)
 {
     struct arg_struct *data = args;
     int hops = data->hops;
