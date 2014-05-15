@@ -28,9 +28,12 @@ void *tsp (void *args)
     struct arg_struct *data = args;
     int hops = data->hops;
     int len = data->len;
-    tsp_path_t path = data->path;
+    tsp_path_t path;
+    memcpy(path, data->path, sizeof(tsp_path_t));
+    //tsp_path_t path = data->path;
     long long int *cuts = data->cuts;
-    tsp_path_t sol = data-> sol;
+    tsp_path_t sol;
+    memcpy(sol, data->sol, sizeof(tsp_path_t));
     int *sol_len = data->sol_len; 
 
     if (len + cutprefix[(nb_towns-hops)] >= minimum) {
