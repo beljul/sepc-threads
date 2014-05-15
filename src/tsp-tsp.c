@@ -23,9 +23,17 @@ int present (int city, int hops, tsp_path_t path)
 
 
 
-void tsp (int hops, int len, tsp_path_t path, long long int *cuts, tsp_path_t sol, int *sol_len)
+void tsp (void *args)
 {
-  if (len + cutprefix[(nb_towns-hops)] >= minimum) {
+    struct arg_struct *data = args;
+    int hops = data->hops;
+    int len = data->len;
+    tsp_path_t path = data->path;
+    long long int *cuts = data->cuts;
+    tsp_path_t sol = data-> sol;
+    int *sol_len = data->sol_len; 
+
+    if (len + cutprefix[(nb_towns-hops)] >= minimum) {
       (*cuts)++ ;
       return;
     }
