@@ -1,13 +1,26 @@
 #include <assert.h>
 #include <string.h>
+#include <pthread.h>
 
 #include "tsp-types.h"
 #include "tsp-genmap.h"
 #include "tsp-print.h"
 #include "tsp-tsp.h"
+#include "tsp-job.h"
+
+struct arg_struct {
+   struct tsp_queue *queue;
+   tsp_path_t path;
+   long long int *cuts;
+   tsp_path_t sol;
+   int *sol_len;
+ };
 
 /* dernier minimum trouvé */
 int minimum;
+
+pthread_mutex_t mutex_job;
+pthread_mutex_t mutex_tsp;
 
 /* résolution du problème du voyageur de commerce */
 int present (int city, int hops, tsp_path_t path)
@@ -21,27 +34,37 @@ int present (int city, int hops, tsp_path_t path)
     return 0 ;
 }
 
-
-
-void *tsp (void *args)
+void *tsp_thread(void *args)
 {
-    struct arg_struct *data = args;
-    int hops = data->hops;
-    int len = data->len;
-    
-    tsp_path_t path;
-    memcpy(path, data->path, sizeof(tsp_path_t));
-    
-    long long int *cuts = data->cuts;
-    
-    tsp_path_t sol;
-    memcpy(sol, data->sol, sizeof(tsp_path_t));
-    
-    int *sol_len = data->sol_len; 
+  struct arg_struct *data = args;
+  
+  struct tsp_queue *q = data->queue;
+  tsp_path_t path;
+  memcpy(path, data->path, sizeof(tsp_path_t));
+  long long int *cuts = data->cuts;
+  tsp_path_t sol;
+  memcpy(sol, data->sol, sizeof(tsp_path_t));
+  int *sol_len = data->sol_len;
 
+  while(!empty_queue(q)) {
+    int hops = 0, len = 0; 
+
+    pthread_mutex_lock(&mutex_job);
+    get_job(q, path, &hops, &len);
+    pthread_mutex_unlock(&mutex_job);
+
+    tsp(hops, len, path, cuts, sol, sol_len);
+  }
+  return NULL;
+}
+
+void tsp (int hops, int len, tsp_path_t path, long long int *cuts, tsp_path_t sol, int *sol_len)
+{
     if (len + cutprefix[(nb_towns-hops)] >= minimum) {
+      
+      pthread_mutex_lock(&mutex_tsp);
       (*cuts)++ ;
-      return NULL;
+      pthread_mutex_unlock(&mutex_tsp);
     }
     
     if (hops == nb_towns) {
@@ -49,8 +72,12 @@ void *tsp (void *args)
 	    int dist = distance[me][0]; // retourner en 0
             if ( len + dist < minimum ) {
 		    minimum = len + dist;
+        
+        pthread_mutex_lock(&mutex_tsp);
 		    *sol_len = len + dist;
-		    memcpy(sol, path, nb_towns*sizeof(int));
+        pthread_mutex_unlock(&mutex_tsp);
+		    
+        memcpy(sol, path, nb_towns*sizeof(int));
 		    print_solution (path, len+dist);
 	    }
     } else {
@@ -60,19 +87,9 @@ void *tsp (void *args)
                 path[hops] = i;
                 int dist = distance[me][i];
 
-                struct arg_struct *newArgs = malloc(sizeof(struct arg_struct));
-                newArgs->hops = hops + 1;
-                newArgs->len = len + dist;
-                memcpy(newArgs->path, path, sizeof(tsp_path_t));
-                newArgs->cuts = cuts;
-                memcpy(newArgs->sol, sol, sizeof(tsp_path_t));
-                newArgs->sol_len = sol_len;
-
-                //tsp (hops + 1, len + dist, path, cuts, sol, sol_len);
-                tsp ((void *)newArgs);
+                tsp (hops + 1, len + dist, path, cuts, sol, sol_len);
             }
         }
     }
-    return NULL;
 }
 

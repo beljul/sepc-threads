@@ -16,13 +16,4 @@ extern tsp_distance_matrix_t distance;
 extern int nb_towns;
 extern long int myseed;
 
-struct arg_struct {
-    int hops;
-    int len;
-    tsp_path_t path;
-    long long int *cuts;
-    tsp_path_t sol;
-    int *sol_len;
-};
-
 #endif

@@ -38,6 +38,14 @@ int nb_threads=1;
 /* affichage SVG */
 bool affiche_sol= false;
 
+struct arg_struct {
+  struct tsp_queue *queue;
+  tsp_path_t path;
+  long long int *cuts;
+  tsp_path_t sol;
+  int *sol_len;
+};
+
 static void generate_tsp_jobs (struct tsp_queue *q, int hops, int len, tsp_path_t path, long long int *cuts, tsp_path_t sol, int *sol_len, int depth)
 {
     if (len >= minimum) {
@@ -121,26 +129,25 @@ int main (int argc, char **argv)
     solution[0] = 0;
 
     pthread_t threads[nb_threads];   
-    int jobNum = 0;
+
+    for(int i=0; i < nb_threads; ++i) {
+      struct arg_struct *args = malloc(sizeof(struct arg_struct));
+
+      args->queue = &q;
+      memcpy(args->path, solution, sizeof(tsp_path_t));
+      args->cuts = &cuts;
+      memcpy(args->sol, sol, sizeof(tsp_path_t));
+      args->sol_len = &sol_len;
+
+      pthread_create(&threads[i], NULL, &tsp_thread, (void *)args);
+      printf("Thread %d created\n", i);
+    }
+
     void *status;
-    while (!empty_queue (&q)) {
-        ++jobNum;
-        int hops = 0, len = 0;
-        get_job (&q, solution, &hops, &len);
-
-        if(jobNum > nb_threads)
-          pthread_join(threads[jobNum%nb_threads], &status);
-        
-        struct arg_struct *args = malloc(sizeof(struct arg_struct));
-        args->hops = hops;
-        args->len = len;
-        memcpy(args->path, solution, sizeof(tsp_path_t));
-        args->cuts = &cuts;
-        memcpy(args->sol, sol, sizeof(tsp_path_t));
-        args->sol_len = &sol_len;
-
-        pthread_create(&threads[jobNum%nb_threads], NULL, &tsp, (void *)args);
-
+    for(int i=0; i < nb_threads; ++i) {
+      printf("\nThread %d join begin\n", i);
+      pthread_join(threads[i], &status);
+      printf("Thread %d join end\n", i);
     }
     
     clock_gettime (CLOCK_REALTIME, &t2);

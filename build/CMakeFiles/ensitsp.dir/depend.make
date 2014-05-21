@@ -22,6 +22,7 @@ CMakeFiles/ensitsp.dir/src/tsp-print.c.o: ../src/tsp-print.h
 CMakeFiles/ensitsp.dir/src/tsp-print.c.o: ../src/tsp-types.h
 
 CMakeFiles/ensitsp.dir/src/tsp-tsp.c.o: ../src/tsp-genmap.h
+CMakeFiles/ensitsp.dir/src/tsp-tsp.c.o: ../src/tsp-job.h
 CMakeFiles/ensitsp.dir/src/tsp-tsp.c.o: ../src/tsp-print.h
 CMakeFiles/ensitsp.dir/src/tsp-tsp.c.o: ../src/tsp-tsp.c
 CMakeFiles/ensitsp.dir/src/tsp-tsp.c.o: ../src/tsp-tsp.h
