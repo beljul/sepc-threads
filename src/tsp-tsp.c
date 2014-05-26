@@ -65,12 +65,13 @@ void tsp (int hops, int len, tsp_path_t path, long long int *cuts, tsp_path_t so
       pthread_mutex_lock(&mutex_tsp);
       (*cuts)++ ;
       pthread_mutex_unlock(&mutex_tsp);
+      return;
     }
     
     if (hops == nb_towns) {
 	    int me = path [hops - 1];
 	    int dist = distance[me][0]; // retourner en 0
-            if ( len + dist < minimum ) {
+      if ( len + dist < minimum ) {
 		    minimum = len + dist;
         
         pthread_mutex_lock(&mutex_tsp);
