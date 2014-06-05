@@ -152,6 +152,7 @@ int main (int argc, char **argv)
     
     clock_gettime (CLOCK_REALTIME, &t2);
 
+    memcpy(sol, solution, sizeof(tsp_path_t));
     if (affiche_sol)
       print_solution_svg (sol, sol_len);
 

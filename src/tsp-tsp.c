@@ -61,10 +61,7 @@ void *tsp_thread(void *args)
 void tsp (int hops, int len, tsp_path_t path, long long int *cuts, tsp_path_t sol, int *sol_len)
 {
     if (len + cutprefix[(nb_towns-hops)] >= minimum) {
-      
-      pthread_mutex_lock(&mutex_tsp);
       (*cuts)++ ;
-      pthread_mutex_unlock(&mutex_tsp);
       return;
     }
     
@@ -73,11 +70,7 @@ void tsp (int hops, int len, tsp_path_t path, long long int *cuts, tsp_path_t so
 	    int dist = distance[me][0]; // retourner en 0
       if ( len + dist < minimum ) {
 		    minimum = len + dist;
-        
-        pthread_mutex_lock(&mutex_tsp);
-		    *sol_len = len + dist;
-        pthread_mutex_unlock(&mutex_tsp);
-		    
+		    *sol_len = len + dist;		    
         memcpy(sol, path, nb_towns*sizeof(int));
 		    print_solution (path, len+dist);
 	    }

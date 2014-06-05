@@ -1,7 +1,7 @@
 # CMake generated Testfile for 
-# Source directory: /home/jens/Documents/Ensimag/2A/SEPC/sepc-threads
-# Build directory: /home/jens/Documents/Ensimag/2A/SEPC/sepc-threads/build
+# Source directory: /home/beljul/workspace/sepc-threads
+# Build directory: /home/beljul/workspace/sepc-threads/build
 # 
-# This file includes the relevent testing commands required for 
+# This file includes the relevant testing commands required for 
 # testing this directory and lists subdirectories to be tested as well.
 ADD_TEST(MesuresDePerf "../mesures/mesures.pl")
