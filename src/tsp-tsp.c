@@ -10,7 +10,6 @@
 
 struct arg_struct {
    struct tsp_queue *queue;
-   tsp_path_t path;
    long long int *cuts;
    tsp_path_t *sol;
    int *sol_len;
@@ -40,10 +39,8 @@ void *tsp_thread(void *args)
   
   struct tsp_queue *q = data->queue;
   tsp_path_t path;
-  memcpy(path, data->path, sizeof(tsp_path_t));
   long long int *cuts = data->cuts;
   tsp_path_t *sol = data->sol;
-  //memcpy(sol, data->sol, sizeof(tsp_path_t));
   int *sol_len = data->sol_len;
 
   while(!empty_queue(q)) {
@@ -56,14 +53,16 @@ void *tsp_thread(void *args)
     int local_minimum = minimum;
     pthread_mutex_unlock(&mutex_job);
 
-    tsp(hops, len, path, &local_cuts, sol, &local_sol_len, &local_minimum);
+    tsp_path_t local_sol;
+    tsp(hops, len, path, &local_cuts, local_sol, &local_sol_len, &local_minimum);
 
     pthread_mutex_lock(&mutex_tsp);
     if(local_minimum < minimum) {
       minimum = local_minimum;
       *sol_len = local_sol_len;
-      memcpy(sol, path, nb_towns*sizeof(int));
+      memcpy(sol, local_sol, nb_towns*sizeof(int));
     }
+    *cuts += local_cuts;
     pthread_mutex_unlock(&mutex_tsp);
   }
   return NULL;

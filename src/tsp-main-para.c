@@ -40,7 +40,6 @@ bool affiche_sol= false;
 
 struct arg_struct {
   struct tsp_queue *queue;
-  tsp_path_t path;
   long long int *cuts;
   tsp_path_t *sol;
   int *sol_len;
@@ -134,7 +133,6 @@ int main (int argc, char **argv)
       struct arg_struct *args = malloc(sizeof(struct arg_struct));
 
       args->queue = &q;
-      memcpy(args->path, solution, sizeof(tsp_path_t));
       args->cuts = &cuts;
       args->sol = &sol;
       args->sol_len = &sol_len;
