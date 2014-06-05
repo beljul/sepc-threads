@@ -140,14 +140,14 @@ int main (int argc, char **argv)
       args->sol_len = &sol_len;
 
       pthread_create(&threads[i], NULL, &tsp_thread, (void *)args);
-      printf("Thread %d created\n", i);
+      //printf("Thread %d created\n", i);
     }
 
     void *status;
     for(int i=0; i < nb_threads; ++i) {
-      printf("\nThread %d join begin\n", i);
+      //printf("\nThread %d join begin\n", i);
       pthread_join(threads[i], &status);
-      printf("Thread %d join end\n", i);
+      //printf("Thread %d join end\n", i);
     }
     
     clock_gettime (CLOCK_REALTIME, &t2);

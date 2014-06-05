@@ -56,13 +56,15 @@ void *tsp_thread(void *args)
     int local_minimum = minimum;
     pthread_mutex_unlock(&mutex_job);
 
-    tsp(hops, len, path, &local_cuts, sol, &local_sol_len, &local_minimum);
+    tsp_path_t local_sol;
+
+    tsp(hops, len, path, &local_cuts, local_sol, &local_sol_len, &local_minimum);
 
     pthread_mutex_lock(&mutex_tsp);
     if(local_minimum < minimum) {
       minimum = local_minimum;
       *sol_len = local_sol_len;
-      memcpy(sol, path, nb_towns*sizeof(int));
+      memcpy(sol, local_sol, nb_towns*sizeof(int));
     }
     pthread_mutex_unlock(&mutex_tsp);
   }
@@ -84,7 +86,7 @@ void tsp (int hops, int len, tsp_path_t path, long long int *cuts, tsp_path_t so
 		    *local_minimum = len + dist;
 		    *sol_len = len + dist;
         memcpy(sol, path, nb_towns*sizeof(int));
-		    print_solution (path, len+dist);
+		    //print_solution (path, len+dist);
 	    }
     } else {
         int me = path [hops - 1];        
