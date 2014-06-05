@@ -2,6 +2,7 @@
 #include <string.h>
 #include <pthread.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "tsp-types.h"
 #include "tsp-genmap.h"
@@ -37,7 +38,6 @@ int present (int city, int hops, tsp_path_t path)
 void *tsp_thread(void *args)
 {
   struct arg_struct *data = args;
-  
   struct tsp_queue *q = data->queue;
   tsp_path_t path;
   long long int *cuts = data->cuts;
@@ -50,7 +50,7 @@ void *tsp_thread(void *args)
     pthread_mutex_lock(&mutex_job);
     get_job(q, path, &hops, &len);
     int local_sol_len = *sol_len;
-    long long int local_cuts = *cuts;
+    long long int local_cuts = 0;
     int local_minimum = minimum;
     pthread_mutex_unlock(&mutex_job);
 
@@ -59,7 +59,6 @@ void *tsp_thread(void *args)
 
     pthread_mutex_lock(&mutex_tsp);
     if(local_minimum < minimum) {
-      printf("JE SUIS DANS LE IF COUCOU\n");
       minimum = local_minimum;
       *sol_len = local_sol_len;
       memcpy(sol, local_sol, nb_towns*sizeof(int));
@@ -85,7 +84,7 @@ void tsp (int hops, int len, tsp_path_t path, long long int *cuts, tsp_path_t so
 		    *local_minimum = len + dist;
 		    *sol_len = len + dist;
         memcpy(sol, path, nb_towns*sizeof(int));
-		    print_solution (path, len+dist);
+		    //print_solution (path, len+dist);
 	    }
     } else {
         int me = path [hops - 1];        

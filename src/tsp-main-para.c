@@ -129,26 +129,24 @@ int main (int argc, char **argv)
 
     pthread_t threads[nb_threads];   
 
+    struct arg_struct *args = malloc(sizeof(struct arg_struct));
+    args->queue = &q;
+    args->cuts = &cuts;
+    args->sol = &sol;
+    args->sol_len = &sol_len;
+
     for(int i=0; i < nb_threads; ++i) {
-      struct arg_struct *args = malloc(sizeof(struct arg_struct));
-
-      args->queue = &q;
-      args->cuts = &cuts;
-      args->sol = &sol;
-      args->sol_len = &sol_len;
-
       pthread_create(&threads[i], NULL, &tsp_thread, (void *)args);
-      printf("Thread %d created\n", i);
-      //memcpy(sol, args->sol, sizeof(tsp_path_t));
     }
 
     void *status;
     for(int i=0; i < nb_threads; ++i) {
-      printf("\nThread %d join begin\n", i);
+      //printf("\nThread %d join begin\n", i);
       pthread_join(threads[i], &status);
-      printf("Thread %d join end\n", i);
+      //printf("Thread %d join end\n", i);
     }
-    
+    free(args);
+
     clock_gettime (CLOCK_REALTIME, &t2);
 
     if (affiche_sol)
