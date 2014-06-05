@@ -42,7 +42,7 @@ struct arg_struct {
   struct tsp_queue *queue;
   tsp_path_t path;
   long long int *cuts;
-  tsp_path_t sol;
+  tsp_path_t *sol;
   int *sol_len;
 };
 
@@ -136,19 +136,19 @@ int main (int argc, char **argv)
       args->queue = &q;
       memcpy(args->path, solution, sizeof(tsp_path_t));
       args->cuts = &cuts;
-      memcpy(args->sol, sol, sizeof(tsp_path_t));
+      args->sol = &sol;
       args->sol_len = &sol_len;
 
       pthread_create(&threads[i], NULL, &tsp_thread, (void *)args);
-      //printf("Thread %d created\n", i);
-      memcpy(sol, args->path, sizeof(tsp_path_t));
+      printf("Thread %d created\n", i);
+      //memcpy(sol, args->sol, sizeof(tsp_path_t));
     }
 
     void *status;
     for(int i=0; i < nb_threads; ++i) {
-      //printf("\nThread %d join begin\n", i);
+      printf("\nThread %d join begin\n", i);
       pthread_join(threads[i], &status);
-      //printf("Thread %d join end\n", i);
+      printf("Thread %d join end\n", i);
     }
     
     clock_gettime (CLOCK_REALTIME, &t2);

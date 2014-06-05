@@ -12,7 +12,7 @@ struct arg_struct {
    struct tsp_queue *queue;
    tsp_path_t path;
    long long int *cuts;
-   tsp_path_t sol;
+   tsp_path_t *sol;
    int *sol_len;
  };
 
@@ -42,8 +42,8 @@ void *tsp_thread(void *args)
   tsp_path_t path;
   memcpy(path, data->path, sizeof(tsp_path_t));
   long long int *cuts = data->cuts;
-  tsp_path_t sol;
-  memcpy(sol, data->sol, sizeof(tsp_path_t));
+  tsp_path_t *sol = data->sol;
+  //memcpy(sol, data->sol, sizeof(tsp_path_t));
   int *sol_len = data->sol_len;
 
   while(!empty_queue(q)) {
