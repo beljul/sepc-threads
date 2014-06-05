@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <string.h>
 #include <pthread.h>
+#include <stdio.h>
 
 #include "tsp-types.h"
 #include "tsp-genmap.h"
@@ -58,6 +59,7 @@ void *tsp_thread(void *args)
 
     pthread_mutex_lock(&mutex_tsp);
     if(local_minimum < minimum) {
+      printf("JE SUIS DANS LE IF COUCOU\n");
       minimum = local_minimum;
       *sol_len = local_sol_len;
       memcpy(sol, local_sol, nb_towns*sizeof(int));

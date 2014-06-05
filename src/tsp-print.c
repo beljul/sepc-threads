@@ -38,10 +38,6 @@ void print_solution (tsp_path_t path, int len) {
 }
 
 void print_solution_svg (tsp_path_t path, int len) {
-  printf("Path : %d\n", path[0]);
-  printf("Len : %d\n", len);
-  printf("Nb Villes : %d\n", nb_towns);
-  printf("Access : %d\n", towns[path[6]].x);
   printf ("<!-- found path len = %3d -->\n", len);
   printf ("<svg viewBox='-10 -10 120 120'\n\
  xmlns='http://www.w3.org/2000/svg'>\n\
